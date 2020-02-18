@@ -8,16 +8,24 @@ import (
 	"os"
 )
 
-func getCSVFile() *os.File {
+// setScanner creates a new scanner, asks the user for input and returns the input value
+func setScanner() string {
 	var csvFile string
+	scanner := bufio.NewScanner(os.Stdin)
+
+	fmt.Print("Enter your custom CSV file. If no file is entered, the default file will be used:\n")
+	scanner.Scan()
+	csvFile = scanner.Text()
+
+	return csvFile
+}
+
+// getCSVFile search for a file in the system and returns it
+func getCSVFile() *os.File {
 	var fileSrc string
 	defaultCsvFile := "problems.csv"
 
-	scanner := bufio.NewScanner(os.Stdin)
-
-	fmt.Print("Enter your custom CSV file. If no file is entered, the default file will be used:/n")
-	scanner.Scan()
-	csvFile = scanner.Text()
+	csvFile := setScanner()
 
 	if len(csvFile) > 0 {
 		fileSrc = csvFile
@@ -33,8 +41,7 @@ func getCSVFile() *os.File {
 	return file
 }
 
-func main() {
-	file := getCSVFile()
+func parseCSV(file *os.File) {
 	csvReader := csv.NewReader(file)
 
 	for {
@@ -48,4 +55,11 @@ func main() {
 
 		fmt.Print(record)
 	}
+
+}
+
+func main() {
+	file := getCSVFile()
+
+	parseCSV(file)
 }
