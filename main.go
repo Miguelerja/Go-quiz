@@ -9,17 +9,24 @@ import (
 )
 
 func getCSVFile() *os.File {
-	inputReader := bufio.NewReader(os.Stdin)
-	text, _ := inputReader.ReadString('\n')
+	var csvFile string
 	var fileSrc string
-	if len(os.Args) > 1 {
-		fileSrc = os.Args[1]
+	defaultCsvFile := "problems.csv"
+
+	scanner := bufio.NewScanner(os.Stdin)
+
+	fmt.Print("Enter your custom CSV file. If no file is entered, the default file will be used:/n")
+	scanner.Scan()
+	csvFile = scanner.Text()
+
+	if len(csvFile) > 0 {
+		fileSrc = csvFile
 	} else {
-		fileSrc = "problems.csv"
+		fileSrc = defaultCsvFile
 	}
 
 	file, error := os.Open(fileSrc)
-	fmt.Print(error)
+
 	if error != nil {
 		fmt.Print(error)
 	}
