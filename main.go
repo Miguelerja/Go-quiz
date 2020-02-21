@@ -70,14 +70,24 @@ func parseCSV(csvFile *os.File) [][]string {
 }
 
 func main() {
-	// points := 0
+	points := 0
 	file := getCSVFile()
 	questions := parseCSV(file)
+	scanner := setScanner()
 
 	for i := 0; i < len(questions); i++ {
 		question := questions[i][0]
 		answer := questions[i][1]
-		fmt.Print(question)
-		fmt.Print(answer)
+		var guess string
+
+		fmt.Print(question + "\n")
+		scanner.Scan()
+		guess = scanner.Text()
+
+		if guess == answer {
+			points = points + 1
+		}
 	}
+
+	fmt.Print("You got right ", points, " of ", len(questions))
 }
