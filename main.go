@@ -69,10 +69,8 @@ func parseCSV(csvFile *os.File) [][]string {
 	return results
 }
 
-func main() {
+func askquestions(questions [][]string) int {
 	points := 0
-	file := getCSVFile()
-	questions := parseCSV(file)
 	scanner := setScanner()
 
 	for i := 0; i < len(questions); i++ {
@@ -88,6 +86,15 @@ func main() {
 			points = points + 1
 		}
 	}
+
+	return points
+}
+
+func main() {
+	file := getCSVFile()
+	questions := parseCSV(file)
+
+	points := askquestions(questions)
 
 	fmt.Print("You got right ", points, " of ", len(questions))
 }
