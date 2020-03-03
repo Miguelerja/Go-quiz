@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"encoding/csv"
+	"flag"
 	"fmt"
 	"io"
 	"os"
@@ -21,29 +22,18 @@ func setScanner() (scanner *bufio.Scanner) {
 }
 
 // getUserInitialConfig gets user inputs to configure the game's time and csv to be used
-func getUserInitialConfig() (csvFile string) {
-	scanner := setScanner()
+// func getUserInitialConfig() (csvFile string) {
+// 	scanner := setScanner()
 
-	fmt.Print("Enter your custom CSV file. If no file is entered, the default file will be used:\n")
-	scanner.Scan()
-	csvFile = scanner.Text()
+// 	fmt.Print("Enter your custom CSV file. If no file is entered, the default file will be used:\n")
+// 	scanner.Scan()
+// 	csvFile = scanner.Text()
 
-	return
-}
+// 	return
+// }
 
 // getCSVFile search for a file in the system and returns it
-func getCSVFile() *os.File {
-	var fileSrc string
-	defaultCsvFile := "problems.csv"
-
-	csvFile := getUserInitialConfig()
-
-	if len(csvFile) > 0 {
-		fileSrc = csvFile
-	} else {
-		fileSrc = defaultCsvFile
-	}
-
+func getCSVFile(fileSrc string) *os.File {
 	file, error := os.Open(fileSrc)
 
 	if error != nil {
@@ -94,7 +84,9 @@ func askquestions(questions [][]string) (points int) {
 }
 
 func main() {
-	file := getCSVFile()
+	fileFlag := flag.String("Questions' file", "problems.csv", "Sets the CSV file to be used to create the questions")
+
+	file := getCSVFile(*fileFlag)
 	questions := parseCSV(file)
 
 	points := askquestions(questions)
