@@ -5,7 +5,6 @@ import (
 	"encoding/csv"
 	"flag"
 	"fmt"
-	"io"
 	"os"
 )
 
@@ -21,17 +20,6 @@ func setScanner() (scanner *bufio.Scanner) {
 	return
 }
 
-// getUserInitialConfig gets user inputs to configure the game's time and csv to be used
-// func getUserInitialConfig() (csvFile string) {
-// 	scanner := setScanner()
-
-// 	fmt.Print("Enter your custom CSV file. If no file is entered, the default file will be used:\n")
-// 	scanner.Scan()
-// 	csvFile = scanner.Text()
-
-// 	return
-// }
-
 // getCSVFile search for a file in the system and returns it
 func getCSVFile(fileSrc string) *os.File {
 	file, error := os.Open(fileSrc)
@@ -42,23 +30,16 @@ func getCSVFile(fileSrc string) *os.File {
 	return file
 }
 
-func parseCSV(csvFile *os.File) (results [][]string) {
+func parseCSV(csvFile *os.File) [][]string {
 	csvReader := csv.NewReader(csvFile)
 
-	for {
-		record, error := csvReader.Read()
+	results, error := csvReader.ReadAll()
 
-		if error == io.EOF {
-			break
-		}
-		if error != nil {
-			handleError(error)
-		}
-
-		results = append(results, record)
+	if error != nil {
+		handleError(error)
 	}
 
-	return
+	return results
 }
 
 // askquestions receives a matrix containing questions and answers, loops through the matrix printing the questions
@@ -85,6 +66,7 @@ func askquestions(questions [][]string) (points int) {
 
 func main() {
 	fileFlag := flag.String("Questions' file", "problems.csv", "Sets the CSV file to be used to create the questions")
+	// isShuffled := flag.Bool("Shuffle questions", false, "Set wether questions should be shuffled on each game iteration or not")
 
 	file := getCSVFile(*fileFlag)
 	questions := parseCSV(file)
