@@ -8,23 +8,27 @@ import (
 	"os"
 )
 
-// setScanner creates a new scanner
-func setScanner() *bufio.Scanner {
-	scanner := bufio.NewScanner(os.Stdin)
+func handleError(err error) {
+	fmt.Print(err)
+	os.Exit(1)
+}
 
-	return scanner
+// setScanner creates a new scanner
+func setScanner() (scanner *bufio.Scanner) {
+	scanner = bufio.NewScanner(os.Stdin)
+
+	return
 }
 
 // getUserInitialConfig gets user inputs to configure the game's time and csv to be used
-func getUserInitialConfig() string {
-	var csvFile string
+func getUserInitialConfig() (csvFile string) {
 	scanner := setScanner()
 
 	fmt.Print("Enter your custom CSV file. If no file is entered, the default file will be used:\n")
 	scanner.Scan()
 	csvFile = scanner.Text()
 
-	return csvFile
+	return
 }
 
 // getCSVFile search for a file in the system and returns it
@@ -43,14 +47,13 @@ func getCSVFile() *os.File {
 	file, error := os.Open(fileSrc)
 
 	if error != nil {
-		fmt.Print(error)
+		handleError(error)
 	}
 	return file
 }
 
-func parseCSV(csvFile *os.File) [][]string {
+func parseCSV(csvFile *os.File) (results [][]string) {
 	csvReader := csv.NewReader(csvFile)
-	var results [][]string
 
 	for {
 		record, error := csvReader.Read()
@@ -59,18 +62,18 @@ func parseCSV(csvFile *os.File) [][]string {
 			break
 		}
 		if error != nil {
-			fmt.Print(error)
-			break
+			handleError(error)
 		}
 
 		results = append(results, record)
 	}
 
-	return results
+	return
 }
 
-func askquestions(questions [][]string) int {
-	points := 0
+// askquestions receives a matrix containing questions and answers, loops through the matrix printing the questions
+// and gathers hte users input. Once the loop is over, it returns the number of correct answers
+func askquestions(questions [][]string) (points int) {
 	scanner := setScanner()
 
 	for i := 0; i < len(questions); i++ {
@@ -87,7 +90,7 @@ func askquestions(questions [][]string) int {
 		}
 	}
 
-	return points
+	return
 }
 
 func main() {
@@ -96,5 +99,5 @@ func main() {
 
 	points := askquestions(questions)
 
-	fmt.Print("You got right ", points, " of ", len(questions))
+	fmt.Print("You got right ", points, " of ", len(questions), "\n")
 }
