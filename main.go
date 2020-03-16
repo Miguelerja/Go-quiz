@@ -82,7 +82,7 @@ func askquestions(questions [][]string, isShuffled bool) (points int) {
 
 func main() {
 	fileFlag := flag.String("questions", "problems.csv", "Sets the CSV file to be used to create the questions")
-	isShuffled := flag.Bool("shuffle", true, "Set wether questions should be shuffled on each game iteration or not")
+	isShuffled := flag.Bool("shuffle", false, "Set wether questions should be shuffled on each game iteration or not")
 
 	flag.Parse()
 
