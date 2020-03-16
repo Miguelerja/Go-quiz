@@ -80,16 +80,20 @@ func askquestions(questions [][]string, isShuffled bool) (points int) {
 	return
 }
 
+func playRound(fileSrc string, isShuffled bool) {
+	file := getCSVFile(fileSrc)
+	questions := parseCSV(file)
+
+	points := askquestions(questions, isShuffled)
+
+	fmt.Print("You got right ", points, " of ", len(questions), "\n")
+}
+
 func main() {
 	fileFlag := flag.String("questions", "problems.csv", "Sets the CSV file to be used to create the questions")
 	isShuffled := flag.Bool("shuffle", false, "Set wether questions should be shuffled on each game iteration or not")
 
 	flag.Parse()
 
-	file := getCSVFile(*fileFlag)
-	questions := parseCSV(file)
-
-	points := askquestions(questions, *isShuffled)
-
-	fmt.Print("You got right ", points, " of ", len(questions), "\n")
+	playRound(*fileFlag, *isShuffled)
 }
