@@ -5,6 +5,7 @@ import (
 	"encoding/csv"
 	"flag"
 	"fmt"
+	"math/rand"
 	"os"
 )
 
@@ -30,9 +31,9 @@ func getCSVFile(fileSrc string) *os.File {
 	return file
 }
 
+// parseCSV reads a csvFile and parses it into a matrix of string arrats containing question and answer
 func parseCSV(csvFile *os.File) [][]string {
 	csvReader := csv.NewReader(csvFile)
-
 	results, error := csvReader.ReadAll()
 
 	if error != nil {
@@ -42,14 +43,29 @@ func parseCSV(csvFile *os.File) [][]string {
 	return results
 }
 
+// shuffleArr takes an array and returns it with its components shuffled randomly
+func shuffleArr(arr [][]string) [][]string {
+	copyArr := append([][]string(nil), arr...)
+
+	for i, j := range rand.Perm(len(arr)) {
+		arr[i] = copyArr[j]
+	}
+
+	return arr
+}
+
 // askquestions receives a matrix containing questions and answers, loops through the matrix printing the questions
-// and gathers hte users input. Once the loop is over, it returns the number of correct answers
-func askquestions(questions [][]string) (points int) {
+// and gathers the users input. Once the loop is over, it returns the number of correct answers
+func askquestions(questions [][]string, isShuffled bool) (points int) {
 	scanner := setScanner()
 
-	for i := 0; i < len(questions); i++ {
-		question := questions[i][0]
-		answer := questions[i][1]
+	if isShuffled {
+		shuffleArr(questions)
+	}
+
+	for _, item := range questions {
+		question := item[0]
+		answer := item[1]
 		var guess string
 
 		fmt.Print(question + "\n")
@@ -65,13 +81,15 @@ func askquestions(questions [][]string) (points int) {
 }
 
 func main() {
-	fileFlag := flag.String("Questions' file", "problems.csv", "Sets the CSV file to be used to create the questions")
-	// isShuffled := flag.Bool("Shuffle questions", false, "Set wether questions should be shuffled on each game iteration or not")
+	fileFlag := flag.String("questions", "problems.csv", "Sets the CSV file to be used to create the questions")
+	isShuffled := flag.Bool("shuffle", true, "Set wether questions should be shuffled on each game iteration or not")
+
+	flag.Parse()
 
 	file := getCSVFile(*fileFlag)
 	questions := parseCSV(file)
 
-	points := askquestions(questions)
+	points := askquestions(questions, *isShuffled)
 
 	fmt.Print("You got right ", points, " of ", len(questions), "\n")
 }
