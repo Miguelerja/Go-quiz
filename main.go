@@ -56,7 +56,8 @@ func shuffleArr(arr [][]string) [][]string {
 }
 
 // askquestions receives a matrix containing questions and answers, loops through the matrix printing the questions
-// and gathers the users input. Once the loop is over, it returns the number of correct answers
+// and gathers the users input. Once the loop is over, it returns the number of correct answers.
+// If the timer ends, the question loop will finish too.
 func askquestions(questions [][]string, isShuffled bool, timer *time.Timer) {
 	var points int
 	scanner := setScanner()
@@ -88,6 +89,7 @@ func askquestions(questions [][]string, isShuffled bool, timer *time.Timer) {
 	}
 }
 
+// getData takes a source path, looks it up to get the CSV file and returns an array matrix after parsing the file
 func getData(fileSrc string) (questions [][]string) {
 	file := getCSVFile(fileSrc)
 	questions = parseCSV(file)
@@ -95,6 +97,7 @@ func getData(fileSrc string) (questions [][]string) {
 	return
 }
 
+// startRound asks the user to initiate the game round
 func startRound() {
 	scanner := setScanner()
 	fmt.Print("Press Enter when you are ready to start \n")
