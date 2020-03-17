@@ -68,16 +68,19 @@ func askquestions(questions [][]string, isShuffled bool, timer *time.Timer) {
 	for _, item := range questions {
 		question := item[0]
 		answer := item[1]
-		var guess string
+		guess := make(chan string)
+
+		fmt.Print(question + "\n")
+		go func() {
+			scanner.Scan()
+			guess <- scanner.Text()
+		}()
+
 		select {
 		case <-timer.C:
 			fmt.Print("You got right ", points, " of ", len(questions), "\n")
 			return
-		default:
-			fmt.Print(question + "\n")
-			scanner.Scan()
-			guess = scanner.Text()
-
+		case guess := <-guess:
 			if guess == answer {
 				points = points + 1
 			}
@@ -85,18 +88,27 @@ func askquestions(questions [][]string, isShuffled bool, timer *time.Timer) {
 	}
 }
 
-func main() {
-	fileSrc := flag.String("questions", "problems.csv", "Set the CSV file to be used to create the questions")
-	isShuffled := flag.Bool("shuffle", false, "Set wether questions should be shuffled on each game iteration or not")
-	seconds := flag.Int("time", 30, "Set the length in seconds of a round")
-	flag.Parse()
+func getData(fileSrc string) (questions [][]string) {
+	file := getCSVFile(fileSrc)
+	questions = parseCSV(file)
 
-	file := getCSVFile(*fileSrc)
-	questions := parseCSV(file)
+	return
+}
 
+func startRound() {
 	scanner := setScanner()
 	fmt.Print("Press Enter when you are ready to start \n")
 	scanner.Scan()
+}
+
+func main() {
+	fileSrc := flag.String("questions", "problems.csv", "Set the CSV file to be used to create the questions")
+	isShuffled := flag.Bool("shuffle", false, "Set wether questions should be shuffled on each game iteration or not")
+	seconds := flag.Int("time", 5, "Set the length in seconds of a round")
+	flag.Parse()
+
+	questions := getData(*fileSrc)
+	startRound()
 
 	timer := time.NewTimer(time.Duration(*seconds) * time.Second)
 	askquestions(questions, *isShuffled, timer)
