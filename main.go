@@ -56,12 +56,16 @@ func shuffleArr(arr [][]string) [][]string {
 
 // askquestions receives a matrix containing questions and answers, loops through the matrix printing the questions
 // and gathers the users input. Once the loop is over, it returns the number of correct answers
-func askquestions(questions [][]string, isShuffled bool) (points int) {
+func askquestions(questions [][]string, isShuffled bool) {
+	var points int
 	scanner := setScanner()
 
 	if isShuffled {
 		shuffleArr(questions)
 	}
+
+	fmt.Print("Press Enter when you are ready to start \n")
+	scanner.Scan()
 
 	for _, item := range questions {
 		question := item[0]
@@ -77,23 +81,17 @@ func askquestions(questions [][]string, isShuffled bool) (points int) {
 		}
 	}
 
-	return
-}
-
-func playRound(fileSrc string, isShuffled bool) {
-	file := getCSVFile(fileSrc)
-	questions := parseCSV(file)
-
-	points := askquestions(questions, isShuffled)
-
 	fmt.Print("You got right ", points, " of ", len(questions), "\n")
 }
 
 func main() {
-	fileFlag := flag.String("questions", "problems.csv", "Sets the CSV file to be used to create the questions")
+	fileSrc := flag.String("questions", "problems.csv", "Set the CSV file to be used to create the questions")
 	isShuffled := flag.Bool("shuffle", false, "Set wether questions should be shuffled on each game iteration or not")
-
+	// seconds := flag.Int("time", 5, "Set the length in seconds of a round")
 	flag.Parse()
 
-	playRound(*fileFlag, *isShuffled)
+	file := getCSVFile(*fileSrc)
+	questions := parseCSV(file)
+
+	askquestions(questions, *isShuffled)
 }
